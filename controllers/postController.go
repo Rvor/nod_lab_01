@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"github.com/gorilla/mux"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -14,18 +15,22 @@ import (
 func PostIndex(w http.ResponseWriter, r *http.Request) {
 
 	posts, err := d.PostList()
+
 	if err != nil {
 		u.DisplayAppError(w, err, "Error when load post list", http.StatusInternalServerError)
+		log.Fatal(err)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 
-	if err := json.NewEncoder(w).Encode(posts); err != nil {
+	err = json.NewEncoder(w).Encode(PostsResource{Data: posts})
+
+	if err != nil {
 		u.DisplayAppError(w, err, "Error when load post list", http.StatusInternalServerError)
+		log.Fatal(err)
 		return
-		//panic(err)
 	}
 }
 

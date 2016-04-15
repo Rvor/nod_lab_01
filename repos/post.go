@@ -1,6 +1,8 @@
 package repos
 
 import (
+	"log"
+
 	_ "github.com/lib/pq"
 	m "nhaoday.com/models"
 )
@@ -10,6 +12,7 @@ func PostList() (m.Posts, error) {
 	rows, err := db.Query(strSql)
 	defer rows.Close()
 	if err != nil {
+		log.Fatal(err)
 		return nil, err
 	}
 	var posts m.Posts
@@ -17,9 +20,14 @@ func PostList() (m.Posts, error) {
 		var post m.Post
 		err = rows.Scan(&post.Id, &post.Title, &post.Description, &post.Metadata, &post.Tags, &post.CreatedOn)
 		if err != nil {
+			log.Fatal(err)
 			return posts, err
 		}
 		posts = append(posts, post)
+	}
+	if err = rows.Err(); err != nil {
+		log.Fatal(err)
+		return posts, err
 	}
 	return posts, err
 }
